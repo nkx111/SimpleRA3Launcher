@@ -1,0 +1,123 @@
+﻿<Window x:Class="SimpleRA3Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimpleRA3Launcher"
+        mc:Ignorable="d"
+        Title="SimpleRA3Launcher" Height="500" Width="800"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing" Icon="/Launcher.ico">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="ComboBox.Transparent.Border" Color="#00000000"/>
+        <SolidColorBrush x:Key="ComboBox.Transparent.Background" Color="#00000000"/>
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="{StaticResource ComboBox.Transparent.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ComboBox.Transparent.Border}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <ToggleButton Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          Foreground="White"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center"
+                                          VerticalContentAlignment="Center"
+                                          HorizontalContentAlignment="Left"
+                                          BorderThickness="{TemplateBinding BorderThickness}" FontSize="16" Width="150">
+                                <ToggleButton.IsChecked>
+                                    <Binding Path="IsDropDownOpen" RelativeSource="{RelativeSource TemplatedParent}" Mode="TwoWay"/>
+                                </ToggleButton.IsChecked>
+                                <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left" Width="150"/>
+                            </ToggleButton>
+                            <Popup IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                                   Placement="Bottom" PopupAnimation="Slide">
+                                <Border Background="Transparent" BorderBrush="Transparent" Padding="0">
+                                    <ItemsPresenter/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ImageButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <!-- 鼠标悬浮时的图片 -->
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="button.png"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <!-- 鼠标悬浮时的图片 -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="button_hover.png"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <!-- 鼠标按下时的图片 -->
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="button_click.png"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Image Source="ra3_simple_2.png" Stretch="UniformToFill"/>
+        <Label x:Name="label1" Content="游戏路径：" VerticalAlignment="Top" Margin="0,10,20,0" Foreground="White" Height="30" HorizontalAlignment="Right" Width="467" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="label4" Content="未找到游戏" VerticalAlignment="Top" Margin="0,40,20,0" Foreground="White" Height="30" HorizontalAlignment="Right" Width="467" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="label2" Content="选择mod：" VerticalAlignment="Top" Margin="20,10,0,0" Foreground="White" Height="30" HorizontalAlignment="Left" Width="467" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" FontSize="16"/>
+
+        <ComboBox x:Name="TransparentComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="24,40,0,0" Width="150"
+                 Height="30" SelectionChanged="TransparentComboBox_SelectionChanged">
+            <ComboBox.Items>
+            </ComboBox.Items>
+        </ComboBox>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,20,20" HorizontalAlignment="Right" Width="200">
+
+            <Button x:Name="button2" Content="选项" Width="80" Height="30" Margin="5" Click="button2_Click" FontSize="12" HorizontalAlignment="Right"/>
+            <Button x:Name="button3" Content="修改器" Width="80" Height="30" Margin="5" FontSize="12" Click="button3_Click"  HorizontalAlignment="Right"/>
+            <Button x:Name="button4" Content="地图文件夹" Width="80" Height="30" Margin="5" FontSize="12" Click="button4_Click"  HorizontalAlignment="Right"/>
+            <Button x:Name="button5" Content="Mod 文件夹" Width="80" Height="30" Margin="5,5,5,15" FontSize="12" Click="button5_Click" HorizontalAlignment="Right"/>
+
+            <Button x:Name="button1" Content="启动 Mod" Width="180" Height="60" Margin="5" Click="button1_Click" FontSize="12" FontWeight="Bold" Style="{StaticResource ImageButtonStyle}" HorizontalAlignment="Right"/>
+
+        </StackPanel>
+    </Grid>
+</Window>
