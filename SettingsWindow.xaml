@@ -5,11 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleRA3Launcher"
         mc:Ignorable="d"
-        Title="SettingsWindow" Height="404" Width="283"
+        Title="SettingsWindow" Height="454" Width="357"
         Loaded="Window_Loaded"
         Closing="Window_Closing">
     <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -20,30 +23,77 @@
         <!-- Search and run commands input field -->
 
         <!-- Checkboxes for options -->
-        <StackPanel Grid.Row="1" Margin="0,10">
-            <CheckBox x:Name="checkBox1"  Content="替换ra3__1.12.game文件" IsChecked="False" Checked="checkBox1_Checked" Unchecked="checkBox1_Unchecked"/>
-            <CheckBox x:Name="checkBox2"  Content="使用4GB补丁（防止大型mod崩溃）" IsChecked="False" Checked="checkBox2_Checked" Unchecked="checkBox2_Unchecked"/>
-            <CheckBox x:Name="checkBox3" Content="使用60帧补丁（可能存在部分特效异常）" Checked="checkBox3_Checked" Unchecked="checkBox3_Unchecked"/>
-        </StackPanel>
+        <Grid Grid.Row="1" Background="#FFFFE8D5">
+            <StackPanel Grid.Row="1" Margin="0,10,0,10" >
+                <CheckBox x:Name="checkBox2"  Content="替换游戏文件，启用内存扩展（推荐勾选）" IsChecked="False" Checked="checkBox2_Checked" Unchecked="checkBox2_Unchecked"/>
+                <CheckBox x:Name="checkBox3" Content="60帧模式（可能存在部分特效异常）" Checked="checkBox3_Checked" Unchecked="checkBox3_Unchecked"/>
+                <Label Content="注意：替换游戏文件也会影响其他MOD" FontWeight="Bold"></Label>
+            </StackPanel>
+        </Grid>
 
-        <!-- TextBlock for command line arguments -->
-        <StackPanel Grid.Row="2" Margin="0,20">
-            <TextBlock Text="额外启动选项:" Margin="0,0,0,5"/>
-            <TextBox x:Name="textBox1" Text=""/>
-            <TextBlock Text="例: -win -xres 1024 -yres 768" Margin="0,0,0,5"/>
-        </StackPanel>
+        <Grid Grid.Row="2" Background="#FFF5FFC8">
+            <!-- TextBlock for command line arguments -->
+            <StackPanel Grid.Row="3" Margin="0,10,0,10" >
+                <CheckBox x:Name="checkBox4" Content="窗口化运行" Checked="checkBox4_Checked" Unchecked="checkBox4_Unchecked"/>
+                <StackPanel x:Name="stackPanel1" IsEnabled="False" Orientation="Horizontal">
+                    <Label Content="分辨率"></Label>
+                    <TextBox x:Name="textBox3" Text="" Width="75" Height="20"/>
+                    <Label Content="  *  "></Label>
+                    <TextBox x:Name="textBox4" Text="" Width="75" Height="20"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
 
-        <!-- File path selector -->
-        <StackPanel Grid.Row="3" Margin="0,10">
-            <TextBlock Text="自定义游戏路径:" Margin="0,0,0,5"/>
-            <TextBox x:Name="textBox2" Text="" IsReadOnly="True"/>
-            <Button Content="..." Margin="0,5,0,0" HorizontalAlignment="Right" Width="30" Click="Button_Click"/>
-        </StackPanel>
+        <Grid Grid.Row="3" Background="#FFDDFFD2">
+            <!-- File path selector -->
+            <StackPanel Grid.Row="5" Margin="0,10,0,10" >
+                <TextBlock Text="自定义游戏路径:" Margin="0,0,0,5"/>
+                <TextBox x:Name="textBox2" Text="" IsReadOnly="True"/>
+                <Button Content="..." Margin="0,5,0,0" HorizontalAlignment="Right" Width="30" Click="Button_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="4" Background="#FFCDE8FF">
+            <StackPanel Grid.Row="4" Margin="0,10,0,10" >
+                <TextBlock Text="额外启动选项:" Margin="0,0,0,5"/>
+                <TextBox x:Name="textBox1" Text=""/>
+                <!--<TextBlock Text="例: -win -xres 1024 -yres 768" Margin="0,0,0,5"/>-->
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="5" Background="#FFD2DCFF">
+            <StackPanel Margin="0,10,0,10" Orientation="Horizontal" >
+                <Button Content="删除Skirmish.ini" HorizontalAlignment="Left" Height="20" Margin="0,5,0,5" VerticalAlignment="Top" Width="124" Click="Button_Click_1"/>
+                <Label Content="遇到地图列表消失的问题时可以修复" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        
+
+
+
+
+
+        <Grid Grid.Row="7">
+
+        </Grid>
+
+
+
+        
+        
+
+        
+
+       
 
         <!-- Footer for QQ and acknowledgment -->
-        <StackPanel Grid.Row="4" Margin="0,10">
+        <StackPanel Grid.Row="7" Margin="0,10,0,10">
             <TextBlock Text="作者QQ: 1160274182" Margin="0,0,0,5"/>
             <TextBlock Text="感谢开源项目RA3Bar-RA3Launcher, 感谢ken22265的游戏修改器" TextWrapping="Wrap"/>
         </StackPanel>
+
+
+
     </Grid>
 </Window>

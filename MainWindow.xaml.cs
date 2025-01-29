@@ -33,6 +33,7 @@ namespace SimpleRA3Launcher
         public string GameSkudefFileName = null;  // full name
 
         public List<string> ModNames = new List<string>();
+        public List<string> ModNamesPure = new List<string>();
         public List<string> ModSkudefFileNames = new List<string>();
 
         SettingsWindow settingsWindow = null;
@@ -40,6 +41,8 @@ namespace SimpleRA3Launcher
 
         public bool ShowCrackWarning = true;
         public bool ShowUnCrackWarning = false;
+
+        private bool HasLocalModFile = false;
 
         private Process CheaterProcess = null;
         private IntPtr GameProcessHandle = IntPtr.Zero;
@@ -64,13 +67,16 @@ namespace SimpleRA3Launcher
                     var _name = ValidateSkuDef(file);
                     if (_name != "")
                     {
-                        ModNames.Add(_name);
+                        ModNames.Add("【自带模组】：" + _name);
+                        ModNamesPure.Add(_name);
                         ModSkudefFileNames.Add(file.FullName);
+                        HasLocalModFile = true;
                     }
 
                 }
             }
 
+            
             // 再在我的文档的目录下寻找mod
             var mydocfolderpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var commonModFolderPath = System.IO.Path.Combine(mydocfolderpath, "Red Alert 3", "Mods");
@@ -86,7 +92,7 @@ namespace SimpleRA3Launcher
                         {
                             if (!ModSkudefFileNames.Contains(file.FullName))
                             {
-                                if (ModNames.Contains(_name))
+                                if (ModNamesPure.Contains(_name))
                                 {
                                     ModNames.Add(_name + "(Mods/" + subdir.Name + ")");
                                 }
@@ -94,6 +100,7 @@ namespace SimpleRA3Launcher
                                 {
                                     ModNames.Add(_name);
                                 }
+                                ModNamesPure.Add(_name);
                                 ModSkudefFileNames.Add(file.FullName);
                             }
                         }
@@ -115,20 +122,28 @@ namespace SimpleRA3Launcher
 
         private void SelectMod()
         {
-            RegistryKey user = Registry.CurrentUser;
-            RegistryKey rk = user.OpenSubKey("SOFTWARE\\RA3ModLauncher");
-            if (rk != null)
+            if (HasLocalModFile)
             {
-                var Preferred_Mod_Path = (string)rk.GetValue("preferred_mod_path");
-                if (Preferred_Mod_Path != null && ModSkudefFileNames.Contains(Preferred_Mod_Path))
-                {
-                    TransparentComboBox.SelectedIndex = ModSkudefFileNames.IndexOf(Preferred_Mod_Path);
-                    TransparentComboBox_SelectionChanged(null, null);
-                    return;
-                }
+                TransparentComboBox.SelectedIndex = 0;
+                TransparentComboBox_SelectionChanged(null, null);
             }
-            TransparentComboBox.SelectedIndex = 0;
-            TransparentComboBox_SelectionChanged(null, null);
+            else
+            {
+                RegistryKey user = Registry.CurrentUser;
+                RegistryKey rk = user.OpenSubKey("SOFTWARE\\RA3ModLauncher");
+                if (rk != null)
+                {
+                    var Preferred_Mod_Path = (string)rk.GetValue("preferred_mod_path");
+                    if (Preferred_Mod_Path != null && ModSkudefFileNames.Contains(Preferred_Mod_Path))
+                    {
+                        TransparentComboBox.SelectedIndex = ModSkudefFileNames.IndexOf(Preferred_Mod_Path);
+                        TransparentComboBox_SelectionChanged(null, null);
+                        return;
+                    }
+                }
+                TransparentComboBox.SelectedIndex = 0;
+                TransparentComboBox_SelectionChanged(null, null);
+            }
         }
 
         // Returns the mod name if the skudef file is valid.
@@ -414,23 +429,42 @@ namespace SimpleRA3Launcher
             {
 
                 //var use_admin = ReadIntRegValue(rk, "use_admin");
-                var replace_file = ReadIntRegValue(rk, "replace_file");
+                //var replace_file = ReadIntRegValue(rk, "replace_file");
                 var use_patch = ReadIntRegValue(rk, "use_patch");
                 var use_60fps = ReadIntRegValue(rk, "use_60fps");
-
-                if (replace_file == 1)
+                if (use_patch == 1)
                 {
                     ShowCrackWarning = false;
                     ShowUnCrackWarning = true;
                 }
 
-                settingsWindow.checkBox1.IsChecked = replace_file == 1;
+                //settingsWindow.checkBox1.IsChecked = replace_file == 1;
                 settingsWindow.checkBox2.IsChecked = use_patch == 1;
                 settingsWindow.checkBox3.IsChecked = use_60fps == 1;
 
-                var additional_opt = (string)rk.GetValue("additional_opt");
-                settingsWindow.textBox1.Text = additional_opt;
 
+                var use_windowed = ReadIntRegValue(rk, "use_windowed");
+                if (use_windowed == 1)
+                {
+                    settingsWindow.checkBox4.IsChecked = true;
+                    settingsWindow.stackPanel1.IsEnabled = true;
+                }
+                var xres = (string)rk.GetValue("xres");
+                if (xres != null)
+                {
+                    settingsWindow.textBox3.Text = xres;
+                }
+                var yres = (string)rk.GetValue("yres");
+                if (yres != null)
+                {
+                    settingsWindow.textBox4.Text = yres;
+                }
+
+                var additional_opt = (string)rk.GetValue("additional_opt");
+                if (additional_opt != null)
+                {
+                    settingsWindow.textBox1.Text = additional_opt;
+                }
 
             }
         }
@@ -453,9 +487,12 @@ namespace SimpleRA3Launcher
                 }
 
                 //rk.SetValue("use_admin", settingsWindow.checkBox1.Checked ? 1 : 0);
-                rk.SetValue("replace_file", (bool)settingsWindow.checkBox1.IsChecked ? 1 : 0);
+                //rk.SetValue("replace_file", (bool)settingsWindow.checkBox1.IsChecked ? 1 : 0);
                 rk.SetValue("use_patch", (bool)settingsWindow.checkBox2.IsChecked ? 1 : 0);
                 rk.SetValue("use_60fps", (bool)settingsWindow.checkBox3.IsChecked ? 1 : 0);
+                rk.SetValue("use_windowed", (bool)settingsWindow.checkBox4.IsChecked ? 1 : 0);
+                rk.SetValue("xres", settingsWindow.textBox3.Text);
+                rk.SetValue("yres", settingsWindow.textBox4.Text);
                 rk.SetValue("additional_opt", settingsWindow.textBox1.Text);
                 
                 if (settingsWindow.textBox2.Text != "")
@@ -495,14 +532,14 @@ namespace SimpleRA3Launcher
                 // use 4GB patch
                 ExtractResource("ra3_1.12_4GB.game", game_112_path, game_112_bk_path);
             }
-            else if ((bool)settingsWindow.checkBox1.IsChecked)
-            {
-                // use cracked patch
-                ExtractResource("ra3_1.12_Original.game", GamePath + "\\Data\\ra3_1.12.game");
-            }
+            //else if ((bool)settingsWindow.checkBox1.IsChecked)
+            //{
+            //    // use cracked patch
+            //    ExtractResource("ra3_1.12_Original.game", GamePath + "\\Data\\ra3_1.12.game");
+            //}
 
 
-            // mod
+            // -config 后面的参数需要带引号！需要绝对路径！
             var GameSkudef_escape = GameSkudefFileName.Replace("\\", "\\\\");
             var BaseGameArgument = " -config \"" + GameSkudef_escape + "\" ";
 
@@ -515,9 +552,38 @@ namespace SimpleRA3Launcher
 
             // additional args
             string AdditionalGameArgument = "";
+            // windowed option
+            if ((bool)settingsWindow.checkBox4.IsChecked)
+            {
+                string xres = settingsWindow.textBox3.Text;
+                string yres = settingsWindow.textBox4.Text;
+                if(xres == "" || yres == "")
+                {
+                    MessageBox.Show("游戏分辨率设置错误！");
+                }
+                try
+                {
+                    int xx = Convert.ToInt32(xres);
+                    int yy = Convert.ToInt32(yres);
+                    if(xx < 800)
+                    {
+                        xx = 800;
+                    }
+                    if (yy < 600)
+                    {
+                        yy = 600;
+                    }
+                    AdditionalGameArgument = " " + "-win -xres " + Convert.ToString(xx) + " -yres " + Convert.ToString(yy);
+                }
+                catch
+                {
+
+                }
+            }
+            // user custom option
             if (settingsWindow.textBox1.Text != "")
             {
-                AdditionalGameArgument = " " + settingsWindow.textBox1.Text;
+                AdditionalGameArgument = AdditionalGameArgument + " " + settingsWindow.textBox1.Text;
             }
 
             string _cwd = GamePath;
